@@ -27,39 +27,48 @@ export default NextAuth({
       }
     })
   ],
-  secret: 'mySecret',
+  secret: process.env.next_auth_secret,
   callbacks: {
     async signIn ({ user }) {
       return user
     },
     async session({ session, token }) {
-      /* if needed info in your session id -- could be another db call
-        // const profile = await getUserInfo({email: token.email})
-        // session.profile = profile
-      */
       console.log('____ session ____')
-      console.log('token')
-      session.profile = token
+
+      if (token.session) {
+        session = token.session
+      }
+      
+      if (token.access) {
+        session = token.access
+      }
+    
+      console.log('retuning session:', session)
       return session;
     },
     async jwt({ token, user, account, profile, isNewUser }) {
-
-      token.user = user;
-      if (user)  {
-        token.user = user
-        token.newUser = isNewUser
-      }
-
-      /* Will see token displayed twice on sign in. Believe first time is your access token.
-        access token/ authorization token will contain user information. 
-        the other time will be your session/authentication 
-        token wont contain user information - just email  
+      /*
+         *** called twice 
+          - first time called will be for access token. 
+            add your profile/ account contents here(wont have token.iat)
+          - second time called will be token for session will have iat
       */
-     console.log('______ jwt _______')
-      console.log('token:', token)
       
+      console.log(' ____ jwt ___', token)
+      if (token.iat) {
+        // session token
+        token.session =  token.email
+      } else {
+        //access token
+        token.access = {
+          profile: {
+            ...user,
+            newUser: isNewUser
+          }
+        }
+      }
+      console.log('returning token:', token)
       return token;
     },
-    
   },
 })
