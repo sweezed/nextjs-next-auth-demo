@@ -15,7 +15,6 @@ export default NextAuth({
           user = await authenticateUser(credentials)
         } catch (error) {
           throw new Error(error.message)
-          console.log('NextAuth:error:', error)
         }
         
         if(user) {

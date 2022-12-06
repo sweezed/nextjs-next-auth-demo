@@ -9,7 +9,8 @@ function MainNavigation() {
  function signOutHandler() {
     signOut()
   }
-
+  
+  console.log('MainNavigation: session', session, status)
   return (
     <header className={classes.header}>
       <Link href='/'>
