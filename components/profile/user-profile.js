@@ -1,11 +1,12 @@
 import ProfileForm from './profile-form';
-import { useSession } from 'next-auth/react';
+import { useSession, useEffect } from 'next-auth/react';
 
 import classes from './user-profile.module.css';
 
+
 function UserProfile() {
  const {data: session, status} = useSession()
- console.log('*** status:', status)
+
  if(status === 'loading') {
   return <p className={classes.profile}>Loading...</p>
  }
@@ -14,10 +15,20 @@ function UserProfile() {
   window.location.href='auth'
  }
 
+ async function changePasswordHandler({oldPassword, newPassword}) {
+  const response = await fetch('/api/user/change-password', {
+    method: 'PATCH',
+    body: JSON.stringify({ oldPassword, newPassword }),
+    Headers: {'Content-Type': 'application/json'}
+  })
+  const data = await response.json()
+  console.log('*** changePasswordHandler response:', data)
+ }
+
   return (
     <section className={classes.profile}>
       <h1>Your User Profile</h1>
-      <ProfileForm />
+      <ProfileForm onChangePassword={changePasswordHandler}/>
     </section>
   );
 }

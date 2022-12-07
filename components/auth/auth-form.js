@@ -26,6 +26,7 @@ function AuthForm() {
   const emailRef = useRef()
   const passwordRef = useRef()
 
+
   function switchAuthModeHandler() {
     setIsLogin((prevState) => !prevState);
   }
@@ -38,23 +39,19 @@ function AuthForm() {
     if (isLogin) {
       // log user in
       const results = await signIn('credentials', {redirect: false, email, password})
-      console.log('results:', results)
-      if(!results.error) {
+      if (!results. error) {
         router.replace('/profile')
       }
     } else {
       try {
         const result = await createUser({email, password})
-        console.log('result', result)
         setIsLogin(true)
       } catch (error) {
-        console.log('*** createUser:error:', error)
+        console.log('createUser:error:', error)
       }
     }
   }
 
-  console.log('session', session)
-  console.log('status', status)
   return (
     <section className={classes.auth}>
       <h1>{isLogin ? 'Login' : 'Sign Up'}</h1>

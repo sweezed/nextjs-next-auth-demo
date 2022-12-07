@@ -14,15 +14,14 @@ export default NextAuth({
         try {
           user = await authenticateUser(credentials)
         } catch (error) {
-          throw new Error(error.message)
+          console.log('credentials provider error: ' + error)
+          throw error 
         }
         
         if(user) {
           delete user.password
           return  user
         }
-    
-        return null
       }
     })
   ],
@@ -32,8 +31,6 @@ export default NextAuth({
       return user
     },
     async session({ session, token }) {
-      console.log('____ session ____')
-
       if (token.session) {
         session = token.session
       }
@@ -42,7 +39,6 @@ export default NextAuth({
         session = token.access
       }
     
-      console.log('retuning session:', session)
       return session;
     },
     async jwt({ token, user, account, profile, isNewUser }) {
@@ -53,7 +49,6 @@ export default NextAuth({
           - second time called will be token for session will have iat
       */
       
-      console.log(' ____ jwt ___', token)
       if (token.iat) {
         // session token
         token.session =  token.email
@@ -66,7 +61,7 @@ export default NextAuth({
           }
         }
       }
-      console.log('returning token:', token)
+
       return token;
     },
   },

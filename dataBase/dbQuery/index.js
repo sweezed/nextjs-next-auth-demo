@@ -23,12 +23,10 @@ export async function authenticateUser({email, password}) {
   try {
     connection = await getConnection()
     const userExist = await connection.db.collection('Users').findOne({email})
-    console.log('*** userExist:', userExist)
-    if(!userExist) throw Error('User Not Found')
+    if(!userExist) throw new Error('User Not Found')
 
     const authenticate = await comparePassword(password, userExist.password)
-    console.log('*** authenticated:', authenticate)
-    if (!authenticate) throw Error('User Not Authenticated')
+    if (!authenticate) throw new Error('User Not Authenticated')
     
     connection.disconnect()
     return userExist
@@ -41,7 +39,7 @@ export async function authenticateUser({email, password}) {
 export async function getUserInfo({email}) {
   let connection
   let userExist
-  
+
   try {
     connection = await getConnection()
     userExist = await connection.db.collection('Users').findOne({email})
@@ -53,4 +51,42 @@ export async function getUserInfo({email}) {
 
   delete userExist.password
   return userExist
+}
+
+export async function changePassword({oldpassword, newpassword, email}) {
+  let connection
+  try {
+    connection = await getConnection()
+  } catch (error) {
+    connection.disconnect()
+    throw new Error('Could Not Connect To Database')
+  }
+
+  let user
+  try {
+    user =  await connection.db.collection('Users').findOne({email})
+    if(!user) throw new Error('User Not Found')
+  } catch (error) {
+    connection.disconnect()
+    throw new Error(error.message)
+  }
+
+  let authenticate 
+  try {
+    authenticate = await comparePassword(oldpassword, user.password)
+    if (!authenticate) throw Error('User Not Authenticated')
+  } catch (error) {
+    connection.disconnect()
+    throw new Error(error.message)
+  }
+  
+  try {
+    const hassedNewPassword = await hashPassword(newpassword)
+    await connection.db.collection('Users').updateOne({email}, { $set: {password: hassedNewPassword} })
+  } catch (error) {
+    connection.disconnect()
+    throw new Error(error.message)
+  } 
+
+  connection.disconnect()
 }
