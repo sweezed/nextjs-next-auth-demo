@@ -15,7 +15,7 @@ export default async function handler (req, res, next) {
   const oldpassword = req.body.oldPassword
   const newpassword = req.body.newPassword
 
-
+  console.log(email, oldpassword, newpassword)
   try {
     await changePassword({oldpassword, newpassword, email})
   } catch (error) {

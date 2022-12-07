@@ -54,6 +54,7 @@ export async function getUserInfo({email}) {
 }
 
 export async function changePassword({oldpassword, newpassword, email}) {
+  console.log('*** changePassword: ' + oldpassword + ' ' + newpassword + ' ' + email)
   let connection
   try {
     connection = await getConnection()
@@ -85,7 +86,7 @@ export async function changePassword({oldpassword, newpassword, email}) {
     await connection.db.collection('Users').updateOne({email}, { $set: {password: hassedNewPassword} })
   } catch (error) {
     connection.disconnect()
-    throw new Error(error.message)
+    throw new Error(`hashedNewPassword: ${email}, ${newpassword}, ${hassedNewPassword} - ${error.message}`)
   } 
 
   connection.disconnect()

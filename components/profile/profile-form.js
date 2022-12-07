@@ -9,7 +9,7 @@ function ProfileForm({onChangePassword}) {
     const formData = new FormData(form)
     const oldPassword = formData.get('old-password')
     const newPassword = formData.get('new-password')
- 
+
     onChangePassword({
       oldPassword,
       newPassword,
