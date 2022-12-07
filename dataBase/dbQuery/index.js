@@ -54,7 +54,6 @@ export async function getUserInfo({email}) {
 }
 
 export async function changePassword({oldpassword, newpassword, email}) {
-  console.log('*** changePassword: ' + oldpassword + ' ' + newpassword + ' ' + email)
   let connection
   try {
     connection = await getConnection()
